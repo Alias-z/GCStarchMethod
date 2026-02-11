@@ -32,7 +32,7 @@ def pdf_to_png(pdf_path, output_path, dpi=300):
 
 def main():
     plots_dir = Path('assets/plots')
-    dpi = 300  # High-quality DPI for publication
+    dpi = 600  # Very high-quality DPI for publication
 
     print("=" * 80)
     print(f"CREATING HIGH-DPI PNG FILES (DPI: {dpi})")

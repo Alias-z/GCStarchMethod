@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Rscript:*)",
+      "Bash(\"C:\\\\Users\\\\zhongyua\\\\Programs\\\\R\\\\R-4.3.3\\\\bin\\\\Rscript.exe\" code/combined_plots.r)",
+      "Bash(\"C:\\\\Users\\\\zhongyua\\\\Programs\\\\R\\\\R-4.3.3\\\\bin\\\\Rscript.exe\" -e:*)",
+      "Bash(pip install:*)",
+      "Bash(where:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd Python script to create A4-sized versions of plots\n\n- create_a4_versions.py: Script to embed original plots in A4 PDFs\n- Uses pikepdf to maintain vectorized format without rasterization\n- Scales plots to fit A4 \\(8.27 x 11.69 inches\\) with 0.5 inch margins\n- Maintains aspect ratio and centers content on page\n- Generated A4 versions: figure_1_A4.pdf, figure_2_A4.pdf, figure_S1_stomata_width_A4.pdf\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)",
+      "Bash(\"C:\\\\Program Files\\\\R\\\\R-4.4.2\\\\bin\\\\Rscript.exe\" code/combined_plots.r)",
+      "Bash(git restore:*)"
+    ]
+  }
+}
