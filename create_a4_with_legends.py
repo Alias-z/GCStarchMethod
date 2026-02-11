@@ -302,38 +302,37 @@ def main():
     plots_dir = Path('assets/plots')
     legends_dir = Path('assets/legends')
 
-    # Test both font sizes
-    for font_size in [9, 12]:
-        print("=" * 80)
-        print(f"CREATING A4 VERSIONS WITH LEGENDS (Font size: {font_size}pt)")
-        print("=" * 80)
-        print()
+    # Use 9pt font size only
+    font_size = 9
+    print("=" * 80)
+    print(f"CREATING A4 VERSIONS WITH LEGENDS (Font size: {font_size}pt)")
+    print("=" * 80)
+    print()
 
-        # Figure 1
-        embed_pdf_with_legend(
-            plots_dir / 'figure_1.pdf',
-            legends_dir / 'figure_1_legend.md',
-            plots_dir / f'figure_1_A4_legend_{font_size}pt.pdf',
-            font_size=font_size,
-            margin_inches=0.25,  # Smaller margin for plot
-            legend_margin_inches=0.4  # Reasonable margin for legend text
-        )
-        print()
+    # Figure 1
+    embed_pdf_with_legend(
+        plots_dir / 'figure_1.pdf',
+        legends_dir / 'figure_1_legend.md',
+        plots_dir / 'figure_1_A4_legend.pdf',
+        font_size=font_size,
+        margin_inches=0.1,  # Minimal margin for maximum plot size
+        legend_margin_inches=0.25  # Minimal margin for legend text
+    )
+    print()
 
-        # Figure 2
-        embed_pdf_with_legend(
-            plots_dir / 'figure_2.pdf',
-            legends_dir / 'figure_2_legend.md',
-            plots_dir / f'figure_2_A4_legend_{font_size}pt.pdf',
-            font_size=font_size,
-            margin_inches=0.25,
-            legend_margin_inches=0.4
-        )
-        print()
+    # Figure 2
+    embed_pdf_with_legend(
+        plots_dir / 'figure_2.pdf',
+        legends_dir / 'figure_2_legend.md',
+        plots_dir / 'figure_2_A4_legend.pdf',
+        font_size=font_size,
+        margin_inches=0.1,
+        legend_margin_inches=0.25
+    )
+    print()
 
     print("=" * 80)
-    print("Done! Created versions with 9pt and 12pt fonts")
-    print("Compare both to choose the best option")
+    print("Done! Created A4 versions with 9pt font and maximized plot size")
     print("=" * 80)
 
 
