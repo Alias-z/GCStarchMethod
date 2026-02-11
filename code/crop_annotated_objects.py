@@ -260,7 +260,7 @@ def process_stomata_annotation_set(input_dir, output_dir, padding_percent=25, ta
 
 def main():
     # Define paths
-    base_dir = Path(__file__).parent
+    base_dir = Path(__file__).parent.parent
 
     # Process stomata aperture images
     screenshots_dir = base_dir / "data" / "Stomata aperture" / "examples" / "screen_shots"

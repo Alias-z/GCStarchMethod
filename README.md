@@ -1,6 +1,6 @@
-# Daloso Project
+# Methodological considerations in the analysis of guard cell starch metabolism
 
-Figure generation pipeline for guard cell starch dynamics and stomatal aperture research.
+Statistics and figure generation for the correspondence: *Methodological considerations in the analysis of guard cell starch metabolism*.
 
 ## Structure
 
@@ -26,10 +26,11 @@ source("code/combined_plots.r")           # Generate plots from R
 python code/create_a4_versions.py         # A4 PDFs without legends
 python code/create_a4_with_legends.py     # A4 PDFs with legends
 python code/create_high_dpi_png.py        # 600 DPI PNGs
+python code/crop_annotated_objects.py     # Crop annotated objects from images
 ```
 
 ## Requirements
 
 **R**: ggplot2, dplyr, tidyr, gridExtra, grid
 
-**Python**: `pip install pikepdf reportlab pdf2image`
+**Python**: `pip install pikepdf reportlab pdf2image pillow`
