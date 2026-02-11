@@ -1,0 +1,192 @@
+---
+title: "..."
+author: "Hongyuan Zhang"
+format: html
+execute: 
+  cache: true
+editor: visual
+jupyter: python3
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+#| label: setup
+#| echo: false
+#| message: false
+options(warnParticalMatchDollar = TRUE)  # warning $ partial matching
+options(warnParticalMatchArgs = TRUE)  # warning func args partial matching
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+library('tidyverse')  # a collection of R packages designed for data science
+source('code/stomata_aperture.R') # load the stomata aperture R sript
+save_dir = './/assets/plots'  # output directory
+```
+
+# Stomata aperture
+
+## Arabidopsis - Pooled
+
+```{r}
+#| label: Stomata aperture Arabidopsis Pooled
+#| warning: false
+#| fig-height: 6
+#| fig-width: 6 * 1.618
+#| paged-print: true
+
+file_path <- 'stomata_aperture_results_pool.xlsx'
+
+# Image paths structure
+image_paths <- list(
+  'SD' = list(
+    'Daloso' = list(
+      'Mock' = list(
+        'EoN' = 'Stomata aperture/examples/8h_daloso_mock_eon.png',
+        '1hBL' = 'Stomata aperture/examples/8h_daloso_mock_1hbl.png'
+      ),
+      'Mannitol' = list(
+        'EoN' = 'Stomata aperture/examples/8h_daloso_mannitol_eon.png', 
+        '1hBL' = 'Stomata aperture/examples/8h_daloso_mannitol_1hbl.png'
+      )
+    ),
+    'Santelia' = list(
+      'Mock' = list(
+        'EoN' = 'Stomata aperture/examples/8h_santelia_mock_eon.png',
+        '1hBL' = 'Stomata aperture/examples/8h_santelia_mock_1hbl.png'
+      ),
+      'Mannitol' = list(
+        'EoN' = 'Stomata aperture/examples/8h_santelia_mannitol_eon.png',
+        '1hBL' = 'Stomata aperture/examples/8h_santelia_mannitol_1hbl.png'
+      )
+    )
+  ),
+  'ND' = list(
+    'Daloso' = list(
+      'Mock' = list(
+        'EoN' = 'Stomata aperture/examples/12h_daloso_mock_eon.png',
+        '1hBL' = 'Stomata aperture/examples/12h_daloso_mock_1hbl.png'
+      ),
+      'Mannitol' = list(
+        'EoN' = 'Stomata aperture/examples/12h_daloso_mannitol_eon.png', 
+        '1hBL' = 'Stomata aperture/examples/12h_daloso_mannitol_1hbl.png'
+      )
+    ),
+    'Santelia' = list(
+      'Mock' = list(
+        'EoN' = 'Stomata aperture/examples/12h_santelia_mock_eon.png',
+        '1hBL' = 'Stomata aperture/examples/12h_santelia_mock_1hbl.png'
+      ),
+      'Mannitol' = list(
+        'EoN' = 'Stomata aperture/examples/12h_santelia_mannitol_eon.png',
+        '1hBL' = 'Stomata aperture/examples/12h_santelia_mannitol_1hbl.png'
+      )
+    )
+  )
+)
+
+# Load and compute ratios
+raw_data <- load_aperture_data(file_path)
+ratio_data <- compute_ratios(raw_data, type = 'arabidopsis')
+width_data <- extract_width_data(raw_data, type = 'arabidopsis')
+
+# Area ratio analysis
+area_stats <- pairwise_comparisons(ratio_data, type = 'arabidopsis', metric = 'area')
+area_plot <- plot_violin(ratio_data, area_stats, type = 'arabidopsis', metric = 'area', image_paths = image_paths)
+area_plot |> ggsave(filename = file.path(save_dir, 'aperture_ratio_plot_arabidopsis.pdf'), 
+                    device = 'pdf', height = 15, width = 10 * 1.618)
+
+# Width analysis
+width_stats <- pairwise_comparisons(width_data, type = 'arabidopsis', metric = 'width')
+width_plot <- plot_violin(width_data, width_stats, type = 'arabidopsis', metric = 'width', image_paths = image_paths)
+width_plot |> ggsave(filename = file.path(save_dir, 'stoma_width_plot_arabidopsis.pdf'), 
+                     device = 'pdf', height = 15, width = 10 * 1.618)
+```
+
+## Arabidopsis - By Run
+
+```{r}
+#| label: Stomata aperture Arabidopsis By Run
+#| warning: false
+#| fig-height: 6
+#| fig-width: 6 * 1.618
+#| paged-print: true
+
+# Area ratio by run
+area_stats_run <- pairwise_comparisons(ratio_data, type = 'arabidopsis_run', metric = 'area')
+area_plot_run <- plot_violin_by_run(ratio_data, area_stats_run, type = 'arabidopsis_run', metric = 'area')
+area_plot_run |> ggsave(filename = file.path(save_dir, 'aperture_ratio_plot_arabidopsis_run.pdf'), 
+                        device = 'pdf', height = 15, width = 10 * 1.618)
+
+# Width by run
+width_stats_run <- pairwise_comparisons(width_data, type = 'arabidopsis_run', metric = 'width')
+width_plot_run <- plot_violin_by_run(width_data, width_stats_run, type = 'arabidopsis_run', metric = 'width')
+width_plot_run |> ggsave(filename = file.path(save_dir, 'stoma_width_plot_arabidopsis_run.pdf'), 
+                         device = 'pdf', height = 15, width = 10 * 1.618)
+```
+
+## Species (Cowpea & Tobacco) - Pooled
+
+```{r}
+#| label: Stomata aperture Species Pooled
+#| warning: false
+#| fig-height: 6
+#| fig-width: 6 * 1.618
+#| paged-print: true
+
+file_path_species <- 'stomata_aperture_cowpea_tobacco.xlsx'
+
+# Image paths
+image_paths_species <- list(
+  'V. unguiculata' = list(
+    'EoN' = 'Stomata aperture/examples/cowpea_eon.png',
+    '1hBL' = 'Stomata aperture/examples/cowpea_1hbl.png'
+  ),
+  'N. tabacum' = list(
+    'EoN' = 'Stomata aperture/examples/tobacco_eon.png',
+    '1hBL' = 'Stomata aperture/examples/tobacco_1hbl.png'
+  )
+)
+
+# Load and compute ratios
+raw_data_species <- load_aperture_data_species(file_path_species)
+ratio_data_species <- compute_ratios(raw_data_species, type = 'species')
+width_data_species <- extract_width_data(raw_data_species, type = 'species')
+
+# Area ratio analysis
+area_stats_species <- pairwise_comparisons(ratio_data_species, type = 'species', metric = 'area')
+area_plot_species <- plot_violin(ratio_data_species, area_stats_species, type = 'species', 
+                                  metric = 'area', image_paths = image_paths_species)
+area_plot_species |> ggsave(filename = file.path(save_dir, 'aperture_ratio_plot_species.pdf'), 
+                            device = 'pdf', height = 8, width = 8 * 1.618)
+
+# Width analysis
+width_stats_species <- pairwise_comparisons(width_data_species, type = 'species', metric = 'width')
+width_plot_species <- plot_violin(width_data_species, width_stats_species, type = 'species', 
+                                   metric = 'width', image_paths = image_paths_species)
+width_plot_species |> ggsave(filename = file.path(save_dir, 'stoma_width_plot_species.pdf'), 
+                             device = 'pdf', height = 8, width = 8 * 1.618)
+```
+
+## Species (Cowpea & Tobacco) - By Run
+
+```{r}
+#| label: Stomata aperture Species By Run
+#| warning: false
+#| fig-height: 6
+#| fig-width: 6 * 1.618
+#| paged-print: true
+
+# Area ratio by run
+area_stats_species_run <- pairwise_comparisons(ratio_data_species, type = 'species_run', metric = 'area')
+area_plot_species_run <- plot_violin_by_run(ratio_data_species, area_stats_species_run, 
+                                             type = 'species_run', metric = 'area')
+area_plot_species_run |> ggsave(filename = file.path(save_dir, 'aperture_ratio_plot_species_run.pdf'), 
+                                device = 'pdf', height = 8, width = 8 * 1.618)
+
+# Width by run
+width_stats_species_run <- pairwise_comparisons(width_data_species, type = 'species_run', metric = 'width')
+width_plot_species_run <- plot_violin_by_run(width_data_species, width_stats_species_run, 
+                                              type = 'species_run', metric = 'width')
+width_plot_species_run |> ggsave(filename = file.path(save_dir, 'stoma_width_plot_species_run.pdf'), 
+                                 device = 'pdf', height = 8, width = 8 * 1.618)
+```
