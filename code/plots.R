@@ -46,7 +46,7 @@ compute_pretty_y_limits <- function(values, lower = 0, step = 5, pad_frac = 0.2)
 
 arabidopsis_image_paths <- list(
     'SD' = list(
-        'NaOH Buffer' = list(
+        'MES-NaOH Buffer' = list(
             'Mock' = list(
                 'EoN' = file.path('data', 'Stomata aperture', 'examples',
                                  '8h_daloso_mock_eon.png'),
@@ -76,7 +76,7 @@ arabidopsis_image_paths <- list(
         )
     ),
     'ND' = list(
-        'NaOH Buffer' = list(
+        'MES-NaOH Buffer' = list(
             'Mock' = list(
                 'EoN' = file.path('data', 'Stomata aperture', 'examples',
                                  '12h_daloso_mock_eon.png'),
@@ -218,7 +218,7 @@ live_dead_data <- load_live_dead_data(
 )
 live_dead_filtered <- filter_live_dead_data(
     live_dead_data,
-    buffer_levels = c('MES-BTP Buffer', 'NaOH Buffer'),
+    buffer_levels = c('MES-BTP Buffer', 'MES-NaOH Buffer'),
     additive_levels = c('Mock', 'Mannitol'),
     growing_levels = c('ND', 'SD'),
     blending_levels = c('30s+30s')

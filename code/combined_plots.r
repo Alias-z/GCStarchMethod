@@ -34,6 +34,51 @@ open_pdf_device <- function(file_path, width, height) {
     })
 }
 
+embed_pdf_fonts <- function(file_path) {
+    if (!file.exists(file_path)) return(invisible(FALSE))
+
+    gs_cmd <- Sys.which('gs')
+    if (!nzchar(gs_cmd)) {
+        warning("Ghostscript not found; leaving PDF fonts unembedded: ", file_path)
+        return(invisible(FALSE))
+    }
+
+    embedded_path <- tempfile(fileext = '.pdf')
+
+    tryCatch({
+        status <- system2(
+            gs_cmd,
+            args = c(
+                '-q',
+                '-dNOPAUSE',
+                '-dBATCH',
+                '-sDEVICE=pdfwrite',
+                '-dCompatibilityLevel=1.4',
+                '-dPDFSETTINGS=/prepress',
+                '-dEmbedAllFonts=true',
+                '-dSubsetFonts=true',
+                '-dCompressFonts=true',
+                '-dMaxSubsetPct=100',
+                paste0('-sOutputFile=', shQuote(embedded_path)),
+                shQuote(file_path)
+            )
+        )
+        if (!identical(status, 0L)) {
+            warning("Ghostscript font embedding failed for ", file_path)
+            return(invisible(FALSE))
+        }
+        if (file.exists(embedded_path)) {
+            file.copy(embedded_path, file_path, overwrite = TRUE)
+            unlink(embedded_path)
+            return(invisible(TRUE))
+        }
+        invisible(FALSE)
+    }, error = function(e) {
+        warning("Could not embed fonts in ", file_path, ": ", conditionMessage(e))
+        invisible(FALSE)
+    })
+}
+
 # Compute a single, shared y-range across related plots so panels are comparable.
 compute_pretty_y_limits <- function(values, lower = 0, step = 5, pad_frac = 0.2) {
     values <- values[is.finite(values)]
@@ -82,7 +127,7 @@ stomata_width_y_limits <- compute_pretty_y_limits(aperture_width$outer_ledge_wid
 build_arabidopsis_image_paths <- function(base_dir) {
     list(
         'SD' = list(
-            'NaOH Buffer' = list(
+            'MES-NaOH Buffer' = list(
                 'Mock' = list(
                     'EoN' = file.path(base_dir, '8h_daloso_mock_eon.png'),
                     '1hBL' = file.path(base_dir, '8h_daloso_mock_1hbl.png')
@@ -104,7 +149,7 @@ build_arabidopsis_image_paths <- function(base_dir) {
             )
         ),
         'ND' = list(
-            'NaOH Buffer' = list(
+            'MES-NaOH Buffer' = list(
                 'Mock' = list(
                     'EoN' = file.path(base_dir, '12h_daloso_mock_eon.png'),
                     '1hBL' = file.path(base_dir, '12h_daloso_mock_1hbl.png')
@@ -296,12 +341,12 @@ draw_section <- function(section, plots) {
 sections <- list(
     list(buffer = 'MES-BTP Buffer', treatment = 'Mock',
          row = 1, col = 1, label = 'MES-BTP Buffer - Mock'),
-    list(buffer = 'NaOH Buffer', treatment = 'Mock',
-         row = 1, col = 2, label = 'NaOH Buffer - Mock'),
+    list(buffer = 'MES-NaOH Buffer', treatment = 'Mock',
+         row = 1, col = 2, label = 'MES-NaOH Buffer - Mock'),
     list(buffer = 'MES-BTP Buffer', treatment = 'Mannitol',
          row = 2, col = 1, label = 'MES-BTP Buffer - Mannitol'),
-    list(buffer = 'NaOH Buffer', treatment = 'Mannitol',
-         row = 2, col = 2, label = 'NaOH Buffer - Mannitol')
+    list(buffer = 'MES-NaOH Buffer', treatment = 'Mannitol',
+         row = 2, col = 2, label = 'MES-NaOH Buffer - Mannitol')
 )
 
 panel_letters <- letters[1:16]  # 4 sections × 4 plots each = 16 letters
@@ -397,6 +442,7 @@ figure_1_path <- open_pdf_device(file.path(plots_dir, 'figure_1.pdf'),
                                  width = figure_width, height = figure_height)
 draw_figure_1(section_plots)
 grDevices::dev.off()
+embed_pdf_fonts(figure_1_path)
 
 # --------------------------------------------------------------------------------------------
 # SUPPLEMENTARY: STOMATA WIDTH
@@ -459,6 +505,7 @@ figure_s1_path <- open_pdf_device(file.path(plots_dir, 'figure_S1_stomata_width.
                                   width = figure_s1_width, height = figure_s1_height)
 draw_figure_s1_stomata_width(width_section_plots)
 grDevices::dev.off()
+embed_pdf_fonts(figure_s1_path)
 
 # --------------------------------------------------------------------------------------------
 # FIGURE 2
@@ -469,7 +516,7 @@ live_dead_data <- load_live_dead_data(live_dead_file, sheet = 'Daloso_Rebuttal_O
 
 live_dead_filtered <- filter_live_dead_data(
     live_dead_data,
-    buffer_levels = c('MES-BTP Buffer', 'NaOH Buffer'),
+    buffer_levels = c('MES-BTP Buffer', 'MES-NaOH Buffer'),
     additive_levels = c('Mock', 'Mannitol'),
     growing_levels = c('ND', 'SD'),
     blending_levels = c('30s+30s')
@@ -510,12 +557,12 @@ build_live_dead_section_plot <- function(data, buffer_value, photoperiod_value,
 live_dead_sections <- list(
     list(buffer = 'MES-BTP Buffer', photoperiod = 'ND',
          row = 1, col = 1, label = '(a)', title = 'MES-BTP Buffer - ND'),
-    list(buffer = 'NaOH Buffer', photoperiod = 'ND',
-         row = 1, col = 2, label = '(c)', title = 'NaOH Buffer - ND'),
+    list(buffer = 'MES-NaOH Buffer', photoperiod = 'ND',
+         row = 1, col = 2, label = '(c)', title = 'MES-NaOH Buffer - ND'),
     list(buffer = 'MES-BTP Buffer', photoperiod = 'SD',
          row = 2, col = 1, label = '(b)', title = 'MES-BTP Buffer - SD'),
-    list(buffer = 'NaOH Buffer', photoperiod = 'SD',
-         row = 2, col = 2, label = '(d)', title = 'NaOH Buffer - SD')
+    list(buffer = 'MES-NaOH Buffer', photoperiod = 'SD',
+         row = 2, col = 2, label = '(d)', title = 'MES-NaOH Buffer - SD')
 )
 
 live_dead_plots <- lapply(live_dead_sections, function(section) {
@@ -622,5 +669,6 @@ figure_2_path <- open_pdf_device(file.path(plots_dir, 'figure_2.pdf'),
                                  width = figure_2_width, height = figure_2_height)
 draw_figure_2()
 grDevices::dev.off()
+embed_pdf_fonts(figure_2_path)
 
 # nolint end

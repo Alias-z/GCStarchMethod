@@ -39,8 +39,9 @@ daloso_plot_theme <- function() {
             panel.spacing = unit(1.2, 'lines'),
             legend.position = 'none',
             axis.title.x = element_blank(),
-            axis.title.y = element_text(size = 18),
+            axis.title.y = element_text(size = 18, face = 'bold'),
             axis.text = element_text(size = 16),
+            axis.text.y = element_text(size = 16, face = 'bold'),
             strip.text = element_text(size = 16, face = 'italic'),
             strip.background = element_rect(fill = 'grey98'),
             plot.title = element_blank(),
@@ -53,12 +54,15 @@ daloso_plot_theme <- function() {
 # ============================================================================================
 
 normalize_names <- function(names) {
+    raw_names <- names
     names <- iconv(names, to = "ASCII//TRANSLIT")
-    names[is.na(names)] <- ""
+    names[is.na(names)] <- raw_names[is.na(names)]
     names <- tolower(names)
     names <- gsub("[^a-z0-9]+", "_", names)
     names <- gsub("^_|_$", "", names)
-    names
+    blank_names <- is.na(names) | names == ""
+    names[blank_names] <- paste0("unnamed_", which(blank_names))
+    make.unique(names, sep = "_")
 }
 
 get_significance_symbol <- function(p_value) {
@@ -127,7 +131,7 @@ build_blended_example_images <- function(example_dir = file.path('data',
         buffer <- if (parts[4] == "mes") {
             "MES-BTP Buffer"
         } else if (parts[4] == "naoh") {
-            "NaOH Buffer"
+            "MES-NaOH Buffer"
         } else {
             NA_character_
         }
@@ -158,7 +162,7 @@ parse_blended_peels_metadata <- function(folder_name) {
 
     buffer <- dplyr::case_when(
         grepl("^1", prefix) ~ "MES-BTP Buffer",
-        grepl("^2", prefix) ~ "NaOH Buffer",
+        grepl("^2", prefix) ~ "MES-NaOH Buffer",
         TRUE ~ NA_character_
     )
 
@@ -223,7 +227,7 @@ load_blended_peels_starch_data <- function(file_path, photoperiod = NA_character
 
     data %>%
         dplyr::mutate(
-            buffer = factor(meta$buffer, levels = c("MES-BTP Buffer", "NaOH Buffer")),
+            buffer = factor(meta$buffer, levels = c("MES-BTP Buffer", "MES-NaOH Buffer")),
             condition = factor(meta$condition,
                                levels = c("Mock",
                                           # "Direct BL",

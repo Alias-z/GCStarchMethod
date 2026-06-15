@@ -5,7 +5,10 @@ Uses pdf2image to convert original plot PDFs to PNG at 300 DPI.
 
 from pathlib import Path
 from pdf2image import convert_from_path
+from PIL import Image
 import os
+
+Image.MAX_IMAGE_PIXELS = None
 
 
 def pdf_to_png(pdf_path, output_path, dpi=300):
@@ -18,11 +21,16 @@ def pdf_to_png(pdf_path, output_path, dpi=300):
         dpi: Resolution in dots per inch (default: 300)
     """
     # Convert PDF to images (returns a list of PIL Image objects)
-    images = convert_from_path(pdf_path, dpi=dpi)
+    images = convert_from_path(
+        pdf_path,
+        dpi=dpi,
+        fmt='png',
+        use_pdftocairo=True,
+    )
 
     # Save the first page as PNG
     if images:
-        images[0].save(output_path, 'PNG')
+        images[0].save(output_path, 'PNG', dpi=(dpi, dpi))
         print(f"Created high-DPI PNG: {output_path}")
         print(f"  Resolution: {dpi} DPI")
         print(f"  Size: {images[0].width} x {images[0].height} pixels")

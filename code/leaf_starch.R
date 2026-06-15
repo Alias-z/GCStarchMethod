@@ -90,8 +90,9 @@ plot_leaf_starch <- function(data, stats = NULL, y_limits = NULL, panel_label = 
             panel.spacing = unit(1.2, 'lines'),
             legend.position = 'none',
             axis.title.x = element_blank(),
-            axis.title.y = element_text(size = 18),
+            axis.title.y = element_text(size = 18, face = 'bold'),
             axis.text = element_text(size = 16),
+            axis.text.y = element_text(size = 16, face = 'bold'),
             plot.title = element_blank(),
             plot.margin = margin(t = 10, r = 20, b = 40, l = 10, unit = 'pt')
         )

@@ -179,7 +179,7 @@ live_dead_data <- load_live_dead_data(
 )
 live_dead_filtered <- filter_live_dead_data(
     live_dead_data,
-    buffer_levels = c('MES-BTP Buffer', 'NaOH Buffer'),
+    buffer_levels = c('MES-BTP Buffer', 'MES-NaOH Buffer'),
     additive_levels = c('Mock', 'Mannitol'),
     growing_levels = c('ND', 'SD'),
     blending_levels = c('30s+30s')

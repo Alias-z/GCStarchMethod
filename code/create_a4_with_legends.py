@@ -16,6 +16,9 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 import os
+import shutil
+import subprocess
+import tempfile
 
 
 # Register Arial font if available, otherwise fall back to Helvetica
@@ -55,6 +58,42 @@ def register_arial():
 
 # Register the font at module load
 LEGEND_FONT = register_arial()
+
+
+def embed_pdf_fonts(pdf_path):
+    """Rewrite a PDF with embedded font subsets when Ghostscript is available."""
+    gs_path = shutil.which('gs')
+    if not gs_path:
+        print(f"Warning: Ghostscript not found; leaving fonts as-is in {pdf_path}")
+        return
+
+    pdf_path = Path(pdf_path)
+    with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp_file:
+        tmp_path = Path(tmp_file.name)
+
+    cmd = [
+        gs_path,
+        '-q',
+        '-dNOPAUSE',
+        '-dBATCH',
+        '-sDEVICE=pdfwrite',
+        '-dCompatibilityLevel=1.4',
+        '-dPDFSETTINGS=/prepress',
+        '-dEmbedAllFonts=true',
+        '-dSubsetFonts=true',
+        '-dCompressFonts=true',
+        '-dMaxSubsetPct=100',
+        f'-sOutputFile={tmp_path}',
+        str(pdf_path),
+    ]
+
+    result = subprocess.run(cmd, check=False)
+    if result.returncode == 0 and tmp_path.exists():
+        shutil.move(tmp_path, pdf_path)
+    else:
+        if tmp_path.exists():
+            tmp_path.unlink()
+        print(f"Warning: Ghostscript font embedding failed for {pdf_path}")
 
 
 def read_legend(legend_path):
@@ -289,6 +328,7 @@ def embed_pdf_with_legend(input_pdf_path, legend_path, output_pdf_path,
 
     # Save the output PDF
     dst.save(output_pdf_path)
+    embed_pdf_fonts(output_pdf_path)
 
     print(f"Created A4 version with legend: {output_pdf_path}")
     print(f"  Original plot: {orig_width/72:.2f} x {orig_height/72:.2f} inches")

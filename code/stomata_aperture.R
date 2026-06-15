@@ -49,7 +49,7 @@ load_aperture_data <- function(file_path) {
     readxl::read_xlsx(file_path, na = 'NA', skip = 0) %>% 
         dplyr::mutate(
             `Buffer` = factor(normalize_buffer_value(`Buffer`),
-                              levels = c('MES-BTP Buffer', 'NaOH Buffer')),
+                              levels = c('MES-BTP Buffer', 'MES-NaOH Buffer')),
             dplyr::across(c(`image_name`, `group`, `object_category`), factor),
             `Run` = factor(`Run`),
             `Timepoint` = factor(normalize_timepoint_value(`Timepoint`),
@@ -114,7 +114,7 @@ load_aperture_data <- function(file_path) {
     raw_data %>%
         dplyr::mutate(
             `Buffer` = factor(normalize_buffer_value(`Buffer`),
-                              levels = c('MES-BTP Buffer', 'NaOH Buffer')),
+                              levels = c('MES-BTP Buffer', 'MES-NaOH Buffer')),
             dplyr::across(c(`image_name`, `group`, `object_category`), factor),
             `Run` = factor(`Run`),
             `Timepoint` = factor(normalize_timepoint_value(`Timepoint`),
@@ -315,7 +315,7 @@ normalize_buffer_value <- function(value) {
             return("MES-BTP Buffer")
         }
         if (item %in% c("daloso", "daloso buffer", "naoh", "naoh buffer")) {
-            return("NaOH Buffer")
+            return("MES-NaOH Buffer")
         }
         if (item == "") return(NA_character_)
         value[i]
@@ -636,8 +636,9 @@ plot_violin <- function(data, pairwise_results = NULL, type = c('arabidopsis', '
             panel.spacing = unit(1.2, 'lines'),
             legend.position = 'none',
             axis.title.x = element_blank(),
-            axis.title.y = element_text(size = 18),
+            axis.title.y = element_text(size = 18, face = 'bold'),
             axis.text = element_text(size = 16),
+            axis.text.y = element_text(size = 16, face = 'bold'),
             strip.text = element_text(size = 16, face = strip_text_face),
             strip.background = element_rect(fill = 'grey98'),
             plot.title = element_blank(),
@@ -1093,8 +1094,9 @@ plot_violin_by_run <- function(data, pairwise_results = NULL, type = c('arabidop
             panel.spacing = unit(1.2, 'lines'),
             legend.position = 'none',
             axis.title.x = element_blank(),
-            axis.title.y = element_text(size = 18),
+            axis.title.y = element_text(size = 18, face = 'bold'),
             axis.text = element_text(size = 16),
+            axis.text.y = element_text(size = 16, face = 'bold'),
             strip.text = element_text(size = 12, face = 'italic'),
             strip.background = element_rect(fill = 'grey98'),
             plot.title = element_blank(),

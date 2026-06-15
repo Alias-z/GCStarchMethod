@@ -16,7 +16,7 @@
 # Filter and plot:
 #   data_filtered <- filter_live_dead_data(
 #       data,
-#       buffer_levels = c("MES-BTP Buffer", "NaOH Buffer"),
+#       buffer_levels = c("MES-BTP Buffer", "MES-NaOH Buffer"),
 #       additive_levels = c("Mock", "Mannitol"),
 #       growing_levels = c("ND", "SD")
 #   )
@@ -41,8 +41,9 @@ daloso_plot_theme <- function() {
             panel.spacing = unit(1.2, 'lines'),
             legend.position = 'none',
             axis.title.x = element_blank(),
-            axis.title.y = element_text(size = 18),
+            axis.title.y = element_text(size = 18, face = 'bold'),
             axis.text = element_text(size = 16),
+            axis.text.y = element_text(size = 16, face = 'bold'),
             strip.text = element_text(size = 16, face = 'italic'),
             strip.background = element_rect(fill = 'grey98'),
             plot.title = element_blank(),
@@ -55,12 +56,15 @@ daloso_plot_theme <- function() {
 # ============================================================================================
 
 normalize_names <- function(names) {
+    raw_names <- names
     names <- iconv(names, to = "ASCII//TRANSLIT")
-    names[is.na(names)] <- ""
+    names[is.na(names)] <- raw_names[is.na(names)]
     names <- tolower(names)
     names <- gsub("[^a-z0-9]+", "_", names)
     names <- gsub("^_|_$", "", names)
-    names
+    blank_names <- is.na(names) | names == ""
+    names[blank_names] <- paste0("unnamed_", which(blank_names))
+    make.unique(names, sep = "_")
 }
 
 get_significance_symbol <- function(p_value) {
@@ -97,7 +101,7 @@ normalize_buffer_value <- function(value) {
             return("MES-BTP Buffer")
         }
         if (item %in% c("daloso buffer", "daloso", "naoh", "naoh buffer")) {
-            return("NaOH Buffer")
+            return("MES-NaOH Buffer")
         }
         if (item == "") return(NA_character_)
         value[i]
@@ -187,7 +191,7 @@ build_live_dead_example_images <- function(example_dir = file.path('data',
 
         buffer <- NA_character_
         if ("naoh" %in% parts || "daloso" %in% parts) {
-            buffer <- "NaOH Buffer"
+            buffer <- "MES-NaOH Buffer"
         }
         if ("mes" %in% parts || "santelia" %in% parts || ("mes" %in% parts && "btp" %in% parts)) {
             buffer <- "MES-BTP Buffer"
@@ -335,7 +339,7 @@ compare_buffers_by_group <- function(data,
                 if ("MES-BTP Buffer" %in% names(x)) unname(x[["MES-BTP Buffer"]]) else 0L
             }, integer(1)),
             n_naoh_buffer = vapply(counts, function(x) {
-                if ("NaOH Buffer" %in% names(x)) unname(x[["NaOH Buffer"]]) else 0L
+                if ("MES-NaOH Buffer" %in% names(x)) unname(x[["MES-NaOH Buffer"]]) else 0L
             }, integer(1)),
             significance = get_significance_symbol(p_value)
         ) %>%
